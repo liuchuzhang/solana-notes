@@ -16,7 +16,7 @@ import addresses from './addresses'
 
 const connection = new Connection(`https://solana-api.projectserum.com`, { confirmTransactionInitialTimeout: 2 * 60 * 1000 });
 
-const USDC = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
+const Token = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
 /**
  * 私钥
  */
@@ -55,13 +55,13 @@ async function main() {
             destinationOwner = address;
             destinationAddress = await findAssociatedTokenAddress(
                 destinationOwner,
-                USDC
+                Token
             );
         } else if (addressInfo.data.length === TOKEN_ACCOUNT_LAYOUT.span) {
             const { mint, owner } = TOKEN_ACCOUNT_LAYOUT.decode(addressInfo.data);
 
-            if (!USDC.equals(mint)) {
-                throw new Error(`invalid address: ${addr} is not USDC token account`);
+            if (!Token.equals(mint)) {
+                throw new Error(`invalid address: ${addr} is not Token token account`);
             }
 
             destinationAddress = address;
@@ -81,11 +81,11 @@ async function main() {
         );
         if (!tokenAccountInfo) {
             transaction.add(
-                await createAssociatedTokenAccount(OWNER, USDC, destinationOwner)
+                await createAssociatedTokenAccount(OWNER, Token, destinationOwner)
             );
         }
 
-        const source = await findAssociatedTokenAddress(OWNER, USDC);
+        const source = await findAssociatedTokenAddress(OWNER, Token);
         transaction.add(
             transferToken({
                 source,
@@ -103,7 +103,7 @@ async function main() {
         // const txid = await connection.sendTransaction(transaction, [WALLET], {
         //     skipPreflight: false,
         // });
-        console.log(`${addr}, ${amount} USDC, txid: https://solscan.io/tx/${signature}`);
+        console.log(`${addr}, ${amount} Token, txid: https://solscan.io/tx/${signature}`);
     }
 }
 
